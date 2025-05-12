@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン - ガイガイチェッカー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-container">
+    <h1>ガイガイチェッカー ログイン</h1>
+    <form id="loginForm">
+      <input type="text" name="id" placeholder="ID" required>
+      <input type="password" name="password" placeholder="パスワード" required>
+      <button type="submit">ログイン</button>
+    </form>
+    <p id="errorMsg" style="color: red; display: none;">問題が発生しました</p>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {
+        id: formData.get('id'),
+        password: formData.get('password')
+      };
+
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        const url = result.admin ? `/dashboard.html?admin=true&id=${data.id}` : '/dashboard.html';
+        window.location.href = url;
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

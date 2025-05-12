@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ダッシュボード - ガイガイチェッカー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>ようこそ ダッシュボード</h1>
+    <p id="adminMsg" style="color: green;"></p>
+
+    <h2>番号からリンクを作成</h2>
+    <input type="text" id="numberInput" placeholder="6桁の番号を入力" maxlength="6">
+    <button onclick="createLink()">リンクを作成</button>
+    <p id="checkerLink"></p>
+
+    <h2>顔写真を検索</h2>
+    <input type="text" id="searchInput" placeholder="6桁の番号を入力して検索">
+    <button onclick="searchPhoto()">検索</button>
+    <div id="photoResult"></div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const admin = urlParams.get('admin') === 'true';
+    const id = urlParams.get('id');
+    if (admin && id) {
+      document.getElementById('adminMsg').textContent = `${id} が六桁番号を作成しました`;
+    }
+
+    function createLink() {
+      const number = document.getElementById('numberInput').value;
+      if (/^\d{6}$/.test(number)) {
+        const link = `/checker.html?number=${number}`;
+        document.getElementById('checkerLink').innerHTML = `<a href="${link}">${link}</a>`;
+      } else {
+        alert('6桁の番号を入力してください');
+      }
+    }
+
+    function searchPhoto() {
+      const number = document.getElementById('searchInput').value;
+      fetch(`/photo/${number}`)
+        .then(res => {
+          if (!res.ok) throw new Error();
+          return res.blob();
+        })
+        .then(blob => {
+          const imgUrl = URL.createObjectURL(blob);
+          document.getElementById('photoResult').innerHTML = `<img src="${imgUrl}" width="200">`;
+        })
+        .catch(() => {
+          document.getElementById('photoResult').innerHTML = '写真が見つかりません';
+        });
+    }
+  </script>
+</body>
+</html>

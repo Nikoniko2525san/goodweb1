@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ガイガイチェッカー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>ガイガイチェッカー</h1>
+    <p>あなたのガイジ度を測りましょう。</p>
+
+    <form id="gaigaiForm">
+      <ol>
+        <li>あなたは癇癪を起こしがちですか？ <input type="checkbox" name="q1"></li>
+        <li>あなたは人の不幸を喜びますか？ <input type="checkbox" name="q2"></li>
+        <li>あなたは殺したいほどの恨みを持った相手がいますか？ <input type="checkbox" name="q3"></li>
+        <li>人が多い場所で騒ぎたくなりますか？ <input type="checkbox" name="q4"></li>
+        <li>ネガティブな言葉を言いがちですか？ <input type="checkbox" name="q5"></li>
+        <li>運動は苦手ですか？ <input type="checkbox" name="q6"></li>
+        <li>何かを荒らしたことがありますか？ <input type="checkbox" name="q7"></li>
+        <li>人の話を聞くのが嫌いですか？ <input type="checkbox" name="q8"></li>
+        <li>病んだことがありますか？ <input type="checkbox" name="q9"></li>
+        <li>あなたの顔写真を判定します。<br>
+          <input type="file" name="photo" accept="image/*" required>
+        </li>
+      </ol>
+      <button type="submit">ガイガイ度を判定する</button>
+    </form>
+
+    <div id="result" style="margin-top:20px;"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('gaigaiForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const number = new URLSearchParams(window.location.search).get('number');
+
+      const formData = new FormData(form);
+      let score = 0;
+      for (let [key, val] of formData.entries()) {
+        if (key !== 'photo') score++;
+      }
+
+      formData.append('number', number);
+
+      const uploadRes = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (uploadRes.ok) {
+        document.getElementById('result').textContent = `あなたのガイガイ度は ${score * 10}% です`;
+      } else {
+        document.getElementById('result').textContent = '判定に失敗しました';
+      }
+    });
+  </script>
+</body>
+</html>
